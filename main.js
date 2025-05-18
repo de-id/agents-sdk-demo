@@ -52,6 +52,10 @@ const callbacks = {
             langSelect.removeAttribute("disabled")
             speechButton.removeAttribute("disabled")
             connectionLabel.innerHTML = "Online"
+
+            if(agentManager.agent.greetings?.[0] ){
+                document.querySelector("#answers").innerHTML +=  `${timeDisplay()} - [assistant] : ${agentManager.agent.greetings[0]}  <br>`
+                }
         }
 
         else if (state == "disconnected" || state == "closed") {
@@ -90,8 +94,9 @@ const callbacks = {
         let lastIndex = messages.length - 1
         let msg = messages[lastIndex]
 
+        console.log(msg)
         // Show Rating buttons only for the Agent's (assistant) full answers
-        if (msg.role == "assistant" && messages.length != 1) {
+        if (msg && msg.role == "assistant" && messages.length != 1) {
             if (type == "answer") {
                 answers.innerHTML += `${timeDisplay()} - [${msg.role}] : ${msg.content}  <button id='${msg.id}_plus' title='agentManager.rate() -> Rate this answer (+)'>+</button> <button id='${msg.id}_minus' title='agentManager.rate() -> Rate this answer (-)'>-</button> <br>`
 
@@ -99,7 +104,7 @@ const callbacks = {
                 document.getElementById(`${msg.id}_minus`).addEventListener('click', () => rate(msg.id, -1))
             }
 
-        } else {
+        } else if (!!msg) {
             answers.innerHTML += `${timeDisplay()} - [${msg.role}] : ${msg.content}  <br>`
         }
 
