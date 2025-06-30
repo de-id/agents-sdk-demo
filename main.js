@@ -11,7 +11,6 @@ let auth = { type: 'key', clientKey: "" };
 // 3. Paste the `data-agent-id' in the 'agentId' variable
 let agentId = ""
 
-// Variables declaration
 let streamVideoElement = document.querySelector("#streamVideoElement")
 let idleVideoElement = document.querySelector("#idleVideoElement")
 let textArea = document.querySelector("#textArea")
@@ -71,8 +70,6 @@ const callbacks = {
             if (streamType !== StreamType.Fluent) {
                 connectionLabel.innerHTML = "Connected"
                 videoWrapper.style.filter = "blur(0px)"
-            } else {
-
             }
         }
 
@@ -262,7 +259,7 @@ console.log("Create Agent Manager: ", agentManager)
 console.log("Connecting to Agent ID: ", agentId)
 await agentManager.connect()
 
-// Check for the Stream type (Legacy/Fluent)
+// Check for the set Stream type (Legacy/Fluent)
 streamType = agentManager.getStreamType()
 console.log("Stream Type:", streamType)
 
