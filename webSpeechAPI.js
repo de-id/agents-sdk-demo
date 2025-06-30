@@ -13,10 +13,8 @@ reset();
 recognition.onend = reset;
 
 recognition.onresult = function (event) {
-  // console.log(event)
   for (var i = event.resultIndex; i < event.results.length; ++i) {
     if (event.results[i].isFinal) {
-      console.log("..")
       textArea.value += event.results[i][0].transcript;
     }
   }
@@ -25,7 +23,6 @@ recognition.onresult = function (event) {
 function reset() {
   recognizing = false;
   speechButton.style.color = ""
-  // speechButton.innerHTML = `<span class="material-symbols-outlined">mic</span>`;
   speechButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" view-box="0 0 24 24" fill="none">
     <path stroke="currentcolor" stroke-width="1.5" d="M7 8a5 5 0 0 1 10 0v3a5 5 0 0 1-10 0V8Z"/>
     <path stroke="currentcolor" stroke-linecap="round" stroke-width="1.5" d="M11 8h2M10 11h4M20 10v1a8 8 0 1 1-16 0v-1M12 19v3"/>
