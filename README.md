@@ -1,26 +1,65 @@
-**D-ID Agents SDK Demo - Vite & Vanilla JavaScript**
+# D-ID Agents SDK Demo - Vite & Vanilla JavaScript
 
-In the terminal, navigate to this project folder and run the following commands:
+This project demonstrates how to use the [@d-id/client-sdk](https://www.npmjs.com/package/@d-id/client-sdk) with Vite and vanilla JavaScript to interact with D-ID Agents.
 
-- `npm init`
+## Features
+- Real-time video and audio streaming with D-ID Agents
+- Chat and Speak modes (LLM and streaming)
+- Speech-to-text using the Web Speech API
+- Modern UI with responsive design
 
-- `npm i vite`
+## Getting Started
 
-- `npm i @d-id/client-sdk`
+### 1. Clone the Repository
+```sh
+git clone https://github.com/de-id/agents-sdk-demo.git
+cd agents-sdk-demo-main
+```
 
+### 2. Install Dependencies
+```sh
+npm install
+```
 
-In the created `package.json` file, add the following to the `scripts` object:
+### 3. Project Structure
+- `index.html` — Main HTML file
+- `main.js` — Application logic and D-ID SDK integration
+- `webSpeechAPI.js` — Speech-to-text support
+- `style.css` — Styling
+- `package.json` — Project configuration
 
-- `"dev": "vite --port 3000"`
+### 4. Scripts
+The `package.json` includes the following scripts:
+```json
+"scripts": {
+  "dev": "vite --port 3000",
+  "build": "vite build",
+  "preview": "vite preview"
+}
+```
 
-<br>
+- `npm run dev` — Start the development server on [http://localhost:3000](http://localhost:3000)
+- `npm run build` — Build for production
+- `npm run preview` — Preview the production build
 
-Fetch the `data-client-key` and the `data-agent-id` as explained on the [Agents SDK Overview Page](https://docs.d-id.com/reference/agents-sdk-overview).
-<br>
-Paste these into their respective variables at the top of the `main.js` file and save.
-  
+### 5. Configure Your Agent
+1. **Fetch your `data-client-key` and `data-agent-id`** from the D-ID Studio or API (see the [Agents SDK Overview](https://docs.d-id.com/docs/agents-sdk-overview)).
+2. **Paste them at the top of `main.js`:**
+   ```js
+   let auth = { type: 'key', clientKey: "<your-client-key>" };
+   let agentId = "<your-agent-id>";
+   ```
 
-In the terminal, run `npm run dev`
+### 6. Run the App
+```sh
+npm run dev
+```
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Notes
+- Requires Node.js v20.19.0 or v22+
+- For more information, see the [D-ID Agents SDK documentation](https://docs.d-id.com/docs/agents-sdk-overview).
 
-Open [http://localhost:3000/](http://localhost:3000/)
+---
+
+© D-ID. MIT License.
