@@ -43,7 +43,8 @@ The `package.json` includes the following scripts:
 - `npm run preview` — Preview the production build
 
 ### 5. Configure Your Agent
-1. **Fetch your `data-client-key` and `data-agent-id`** from the D-ID Studio or API (see the [Agents SDK Overview](https://docs.d-id.com/docs/agents-sdk-overview)).
+1. **Fetch your `data-client-key` and `data-agent-id`** from the D-ID Studio or API (see the [Agents SDK Overview](https://docs.d-id.com/reference/agents-sdk-overview)).
+
 2. **Paste them at the top of `main.js`:**
    ```js
    let auth = { type: 'key', clientKey: "<your-client-key>" };
@@ -58,7 +59,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Notes
 - Requires Node.js v20.19.0 or v22+
-- For more information, see the [D-ID Agents SDK documentation](https://docs.d-id.com/docs/agents-sdk-overview).
+- For more information, see the [D-ID Agents SDK documentation](https://docs.d-id.com/reference/agents-sdk-overview).
 
 ---
 
