@@ -1,11 +1,12 @@
 # D-ID Agents SDK Demo - Vite & Vanilla JavaScript
 
-This project demonstrates how to use the [@d-id/client-sdk](https://www.npmjs.com/package/@d-id/client-sdk) with Vite and vanilla JavaScript to interact with D-ID Agents.
+This demo showcases the core features of the [@d-id/client-sdk](https://www.npmjs.com/package/@d-id/client-sdk) with Vite and vanilla JavaScript. It’s meant as a starting point for your own customizations, demonstrating the SDK’s basic functionality in a simple, approachable way — not as a production-ready application.
 
 ## Features
 - Real-time video and audio streaming with D-ID Agents
-- Chat and Speak modes (LLM and streaming)
-- Speech-to-text using the Web Speech API
+- Chat and Speak modes (Chat: D-ID’s LLM responses, Speak: repeats textbox input for custom implementations)
+- **New:** Fluent streaming + response interruption (Premium+ Agents only)
+- Speech-to-text example using the open-source WebSpeech API
 - Modern UI with responsive design
 
 ## Getting Started
@@ -24,7 +25,7 @@ npm install
 ### 3. Project Structure
 - `index.html` — Main HTML file
 - `main.js` — Application logic and D-ID SDK integration
-- `webSpeechAPI.js` — Speech-to-text support
+- `webSpeechAPI.js` — WebSpeech API Speech-to-text support
 - `style.css` — Styling
 - `package.json` — Project configuration
 
