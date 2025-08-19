@@ -73,8 +73,6 @@ const callbacks = {
             if (streamType !== StreamType.Fluent) {
                 connectionLabel.innerHTML = "Connected"
                 videoWrapper.style.filter = "blur(0px)"
-            } else {
-
             }
         }
 
