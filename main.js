@@ -11,6 +11,7 @@ let auth = { type: 'key', clientKey: "" };
 // 3. Paste the `data-agent-id' in the 'agentId' variable
 let agentId = ""
 
+// Variables declaration
 let streamVideoElement = document.querySelector("#streamVideoElement")
 let idleVideoElement = document.querySelector("#idleVideoElement")
 let textArea = document.querySelector("#textArea")
@@ -20,6 +21,8 @@ let connectionLabel = document.querySelector("#connectionLabel")
 let reconnectButton = document.querySelector("#reconnectButton")
 let actionButton = document.querySelector("#actionButton");
 let videoWrapper = document.querySelector("#video-wrapper");
+let interruptButton = document.querySelector("#interruptButton");
+let renderedMessageIds = new Set();
 let srcObject;
 let streamType;
 
@@ -53,11 +56,11 @@ const callbacks = {
             streamVideoElement.style.opacity = 0;
             idleVideoElement.style.opacity = 1;
 
-            // Setting video background image to avoid "flickering" for the legacy streaming architecture
+            // Setting video background image to avoid "flickering" for the Legacy streaming architecture:
             videoWrapper.style.backgroundImage = `url(${agentManager.agent.presenter.thumbnail})`
-            // For photo-based avatars, set the following: `url(${agentManager.agent.presenter.source_url})`
+            // (For photo-based avatars, set the following: `url(${agentManager.agent.presenter.source_url})`
             // For Premium+ avatars, set the following: `url(${agentManager.agent.presenter.thumbnail})`
-            // Alternativley, save the first frame of the Idle video locally and set it as background image.
+            // Alternativley, save the first frame of the Idle video locally and set it as background image.)
         }
 
         else if (state == "connected") {
@@ -70,6 +73,8 @@ const callbacks = {
             if (streamType !== StreamType.Fluent) {
                 connectionLabel.innerHTML = "Connected"
                 videoWrapper.style.filter = "blur(0px)"
+            } else {
+
             }
         }
 
@@ -86,9 +91,10 @@ const callbacks = {
         }
     },
 
+    // Video State callback method (Legacy and Fluent architectures)
     onVideoStateChange(state) {
         console.log("Video State: ", state)
-        // NEW ARCHITECURE (Fluent: Single Video for both Idle and Streaming)
+        // FLUENT - NEW ARCHITECURE (Fluent: Single Video for both Idle and Streaming)
         if (streamType == StreamType.Fluent) {
             if (state == "START") {
                 videoWrapper.style.filter = "blur(0px)"
@@ -97,7 +103,7 @@ const callbacks = {
                 idleVideoElement.style.opacity = 0;
             }
         }
-        // OLD ARCHITECURE (Legacy: Switching between the idle and streamed videos elements)
+        // LEGACY - OLD ARCHITECURE (Legacy: Switching between the idle and streamed videos elements)
         else {
             if (state == "START") {
                 streamVideoElement.muted = false
@@ -115,43 +121,54 @@ const callbacks = {
 
     // New messages callback method
     onNewMessage(messages, type) {
+        let lastIndex = messages.length - 1;
+        let msg = messages[lastIndex];
+        if (!msg) return;
 
-        // Show only the last message from the entire 'messages' array
-        let lastIndex = messages.length - 1
-        let msg = messages[lastIndex]
-
-        // Show Rating buttons only for the Agent's (assistant) full answers
         if (msg && msg.role == "assistant" && messages.length != 1) {
             if (type == "answer") {
+                if (msg.id && renderedMessageIds.has(msg.id)) return;
+                if (msg.id) renderedMessageIds.add(msg.id);
+
                 answers.innerHTML += `<div class='agentMessage'> ${msg.content} <div class="ratingButtons"> <button id='${msg.id}_plus' title='agentManager.rate() -> Rate this answer (+)'><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none">
                 <path fill="currentcolor" d="m11.986 7.1-.41-.071.41.07Zm-.392 2.266-.41-.07.41.07Zm-7.406 2.34-.415.036.415-.036Zm-.452-5.218.416-.036-.416.036Zm4.372-3.257.411.067-.41-.067ZM7.74 5.478l.411.067-.41-.067Zm-3.685.229-.272-.316.272.316Zm.799-.69.272.317-.272-.316Zm1.323-2.03-.404-.104.404.105ZM6.44 1.97l.403.105-.403-.105Zm.93-.492-.128.397.128-.397Zm.08.026.128-.397-.128.397ZM5.812 3.921l.368.196-.368-.196Zm2.246-1.787-.403.105.403-.105ZM6.82 1.515l-.18-.375.18.375Zm-4.28 10.743-.414.036.415-.036ZM2 6.016l.415-.036a.417.417 0 0 0-.832.036H2Zm9.576 1.013-.392 2.266.82.142.393-2.266-.821-.142Zm-3.884 5.107H5.109v.833h2.583v-.833Zm-3.09-.465-.45-5.219-.83.072.45 5.218.83-.071Zm6.582-2.376c-.282 1.629-1.75 2.84-3.492 2.84v.834c2.125 0 3.958-1.483 4.313-3.532l-.821-.142ZM7.697 3.164 7.33 5.41l.822.134.368-2.247-.822-.134Zm-3.37 2.858.799-.688-.544-.632-.8.689.545.631Zm2.253-2.93.264-1.018-.806-.21-.265 1.02.807.209Zm.663-1.218.081.026.255-.794-.08-.026-.256.794ZM6.18 4.117c.173-.325.308-.668.4-1.024l-.807-.21a3.821 3.821 0 0 1-.328.841l.735.393ZM7.324 1.9c.17.054.291.186.33.34l.807-.21a1.325 1.325 0 0 0-.882-.924l-.255.794Zm-.48.174A.286.286 0 0 1 7 1.89l-.362-.75a1.119 1.119 0 0 0-.6.725l.806.209ZM7 1.89a.331.331 0 0 1 .243-.016l.255-.794a1.164 1.164 0 0 0-.86.06L7 1.89Zm1.196 4.543h2.879v-.834H8.196v.834Zm-5.241 5.79-.54-6.243-.83.072.54 6.242.83-.071Zm-.538.059V6.016h-.834v6.266h.834Zm-.292.012a.146.146 0 0 1 .145-.158v.833c.404 0 .72-.345.685-.746l-.83.071Zm6.394-8.996c.07-.422.05-.854-.058-1.268l-.806.21c.078.301.093.616.042.924l.822.134Zm-3.41 8.838a.509.509 0 0 1-.506-.465l-.83.071c.06.694.64 1.227 1.336 1.227v-.833Zm.017-6.802c.378-.326.785-.713 1.054-1.217l-.735-.393c-.193.36-.5.665-.863.978l.544.632Zm7.27 1.837a1.342 1.342 0 0 0-1.321-1.572v.834c.315 0 .555.284.5.596l.822.142ZM2.27 12.136c.082 0 .147.066.147.146h-.834c0 .379.307.687.687.687v-.833ZM7.33 5.41a.88.88 0 0 0 .867 1.022v-.834a.046.046 0 0 1-.045-.054l-.822-.134ZM4.152 6.452a.51.51 0 0 1 .175-.43l-.544-.631a1.343 1.343 0 0 0-.462 1.133l.83-.072Z"/>
                 </svg></button> <button id='${msg.id}_minus' title='agentManager.rate() -> Rate this answer (-)'><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" style="rotate: 180deg;">
                 <path fill="currentcolor" d="m11.986 7.1-.41-.071.41.07Zm-.392 2.266-.41-.07.41.07Zm-7.406 2.34-.415.036.415-.036Zm-.452-5.218.416-.036-.416.036Zm4.372-3.257.411.067-.41-.067ZM7.74 5.478l.411.067-.41-.067Zm-3.685.229-.272-.316.272.316Zm.799-.69.272.317-.272-.316Zm1.323-2.03-.404-.104.404.105ZM6.44 1.97l.403.105-.403-.105Zm.93-.492-.128.397.128-.397Zm.08.026.128-.397-.128.397ZM5.812 3.921l.368.196-.368-.196Zm2.246-1.787-.403.105.403-.105ZM6.82 1.515l-.18-.375.18.375Zm-4.28 10.743-.414.036.415-.036ZM2 6.016l.415-.036a.417.417 0 0 0-.832.036H2Zm9.576 1.013-.392 2.266.82.142.393-2.266-.821-.142Zm-3.884 5.107H5.109v.833h2.583v-.833Zm-3.09-.465-.45-5.219-.83.072.45 5.218.83-.071Zm6.582-2.376c-.282 1.629-1.75 2.84-3.492 2.84v.834c2.125 0 3.958-1.483 4.313-3.532l-.821-.142ZM7.697 3.164 7.33 5.41l.822.134.368-2.247-.822-.134Zm-3.37 2.858.799-.688-.544-.632-.8.689.545.631Zm2.253-2.93.264-1.018-.806-.21-.265 1.02.807.209Zm.663-1.218.081.026.255-.794-.08-.026-.256.794ZM6.18 4.117c.173-.325.308-.668.4-1.024l-.807-.21a3.821 3.821 0 0 1-.328.841l.735.393ZM7.324 1.9c.17.054.291.186.33.34l.807-.21a1.325 1.325 0 0 0-.882-.924l-.255.794Zm-.48.174A.286.286 0 0 1 7 1.89l-.362-.75a1.119 1.119 0 0 0-.6.725l.806.209ZM7 1.89a.331.331 0 0 1 .243-.016l.255-.794a1.164 1.164 0 0 0-.86.06L7 1.89Zm1.196 4.543h2.879v-.834H8.196v.834Zm-5.241 5.79-.54-6.243-.83.072.54 6.242.83-.071Zm-.538.059V6.016h-.834v6.266h.834Zm-.292.012a.146.146 0 0 1 .145-.158v.833c.404 0 .72-.345.685-.746l-.83.071Zm6.394-8.996c.07-.422.05-.854-.058-1.268l-.806.21c.078.301.093.616.042.924l.822.134Zm-3.41 8.838a.509.509 0 0 1-.506-.465l-.83.071c.06.694.64 1.227 1.336 1.227v-.833Zm.017-6.802c.378-.326.785-.713 1.054-1.217l-.735-.393c-.193.36-.5.665-.863.978l.544.632Zm7.27 1.837a1.342 1.342 0 0 0-1.321-1.572v.834c.315 0 .555.284.5.596l.822.142ZM2.27 12.136c.082 0 .147.066.147.146h-.834c0 .379.307.687.687.687v-.833ZM7.33 5.41a.88.88 0 0 0 .867 1.022v-.834a.046.046 0 0 1-.045-.054l-.822-.134ZM4.152 6.452a.51.51 0 0 1 .175-.43l-.544-.631a1.343 1.343 0 0 0-.462 1.133l.83-.072Z"/>
                 </svg></button></div>
-                </div><br> `
-                console.log(`New Message:\n[${msg.role}] ${msg.content}`)
-                connectionLabel.innerHTML = "Online"
-                document.getElementById(`${msg.id}_plus`).addEventListener('click', () => rate(msg.id, 1))
-                document.getElementById(`${msg.id}_minus`).addEventListener('click', () => rate(msg.id, -1))
+                </div><br> `;
+                console.log(`New Message:\n[${msg.role}] ${msg.content}`);
+                connectionLabel.innerHTML = "Online";
+                document.getElementById(`${msg.id}_plus`).addEventListener('click', () => rate(msg.id, 1), { once: true });
+                document.getElementById(`${msg.id}_minus`).addEventListener('click', () => rate(msg.id, -1), { once: true });
             }
-
-            // User Messages
         } else if (!!msg) {
-            answers.innerHTML += `<div class="userMessage">${msg.content} </div><br>`
-            console.log(`New Message:\n[${msg.role}] ${msg.content}`)
+            if (msg.id && renderedMessageIds.has(msg.id)) return;
+            if (msg.id) renderedMessageIds.add(msg.id);
+
+            answers.innerHTML += `<div class="userMessage">${msg.content} </div><br>`;
+            console.log(`New Message:\n[${msg.role}] ${msg.content}`);
         }
 
-        // Auto-scroll to the last message 
         answers.scrollTo({
             top: answers.scrollHeight + 50,
             behavior: 'smooth'
         });
-
     },
 
-    // New callback to show the Talking/Idle states with the Fluent stream type
+
+    // Agent's Talking/Idle states for INTERRUPT (only valid for the new Fluent architecutre)
     onAgentActivityStateChange(state) {
         console.log("Agent Activity State: ", state)
+        if (state == "TALKING") {
+            interruptButton.style.display = "inline-flex"
+            speechButton.style.display = "none"
+            actionButton.style.display = "none"
+        }
+        else {
+            interruptButton.style.display = "none"
+            speechButton.style.display = "inline-flex"
+            actionButton.style.display = "inline-flex"
+        }
     },
 
     // Error handling
@@ -163,7 +180,7 @@ const callbacks = {
 }
 
 // 5. Define the Stream options object
-let streamOptions = { compatibilityMode: "on", streamWarmup: false, fluent: false }
+let streamOptions = { compatibilityMode: "on", streamWarmup: true, fluent: true }
 
 // - - - - - - - - - - - - Local functions to utilize the Agent's SDK methods: - - - - - - - - - - - - - //
 
@@ -183,7 +200,7 @@ function speak() {
     }
 }
 
-// agentManager.chat() -> Streams the D-ID's LLM and Knowledge (RAG) Response
+// agentManager.chat() -> Streams the D-ID's LLM and Knowledge Response
 function chat() {
     let val = textArea.value
     if (val !== "") {
@@ -192,6 +209,12 @@ function chat() {
         connectionLabel.innerHTML = "Thinking.."
         textArea.value = ""
     }
+}
+
+// agentManager.interrupt() -> Interrupts the Agent's response - Only supported for Fluent architecture + Premium+ Avatars.
+function interrupt() {
+    let interrupt = agentManager.interrupt({ type: "click" })
+    console.log("Interrupt")
 }
 
 // agentManager.rate() -> Rating the Agent's answers - for future Agents Analytics and Insights feature
@@ -226,6 +249,7 @@ if (agentId == "" || auth.clientKey == "") {
 function switchModes() {
     const options = document.querySelectorAll('#buttons input[name="option"]');
     const checkedIndex = Array.from(options).findIndex(opt => opt.checked);
+
     const nextIndex = (checkedIndex + 1) % options.length;
     options[nextIndex].checked = true;
 }
@@ -242,6 +266,7 @@ function handleAction() {
 actionButton.addEventListener('click', handleAction);
 speechButton.addEventListener('click', () => toggleStartStop())
 reconnectButton.addEventListener('click', () => reconnect())
+interruptButton.addEventListener('click', () => interrupt())
 
 // Focus on text area and disabling the buttons when the page is loaded
 window.addEventListener('load', () => {
@@ -259,7 +284,7 @@ console.log("Create Agent Manager: ", agentManager)
 console.log("Connecting to Agent ID: ", agentId)
 await agentManager.connect()
 
-// Check for the set Stream type (Legacy/Fluent)
+// This will ensure that the correct stream type is being used
 streamType = agentManager.getStreamType()
 console.log("Stream Type:", streamType)
 
