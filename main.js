@@ -58,8 +58,8 @@ const callbacks = {
 
             // Setting video background image to avoid "flickering" for the Legacy streaming architecture:
             videoWrapper.style.backgroundImage = `url(${agentManager.agent.presenter.thumbnail})`
-            // (For photo-based avatars, set the following: `url(${agentManager.agent.presenter.source_url})`
-            // For Premium+ avatars, set the following: `url(${agentManager.agent.presenter.thumbnail})`
+            // (For Photo Avatars (V2), set the following: `url(${agentManager.agent.presenter.source_url})`
+            // For Video avatars (V3 Pro), set the following: `url(${agentManager.agent.presenter.thumbnail})`
             // Alternativley, save the first frame of the Idle video locally and set it as background image.)
         }
 
@@ -209,7 +209,7 @@ function chat() {
     }
 }
 
-// agentManager.interrupt() -> Interrupts the Agent's response - Only supported for Fluent architecture + Premium+ Avatars.
+// agentManager.interrupt() -> Interrupts the Agent's response - Only supported for Fluent architecture + Video Avatars (V3 Pro).
 function interrupt() {
     let interrupt = agentManager.interrupt({ type: "click" })
     console.log("Interrupt")
