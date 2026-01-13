@@ -5,7 +5,7 @@ This demo showcases the core features of the [@d-id/client-sdk](https://www.npmj
 ## Features
 - Real-time video and audio streaming with D-ID Agents
 - Chat and Speak modes (Chat: D-ID’s LLM responses, Speak: repeats textbox input for custom implementations)
-- **New:** Fluent streaming + response interruption (Premium+ Agents only)
+- **New:** Fluent streaming + response interruption (Agents with V3 Pro Avatars only)
 - Speech-to-text example using the open-source WebSpeech API
 - Modern UI with responsive design
 
